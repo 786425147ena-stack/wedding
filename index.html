@@ -11,6 +11,7 @@
     <style>
         :root {
             --rose-gold: #050b83;
+            /* اللون الأزرق الملكي المعتمد */
             --ivory: #fcfaf2;
             --ivory-dark: #f0e6cd;
             --lace-white: #ffffff;
@@ -65,6 +66,27 @@
             transition: transform 2.5s cubic-bezier(0.77, 0, 0.175, 1);
         }
 
+        .curtain-half::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 30px;
+            height: 100%;
+            background-image: url('https://www.transparentpng.com/download/wedding-frame/L8V9Y4-wedding-frame-lace-png.png');
+            background-size: contain;
+            background-repeat: repeat-y;
+            opacity: 0.1;
+        }
+
+        .curtain-half.left::after {
+            right: 5px;
+        }
+
+        .curtain-half.right::after {
+            left: 5px;
+            transform: scaleX(-1);
+        }
+
         #script-monogram {
             position: absolute;
             top: 50%;
@@ -85,10 +107,23 @@
             line-height: 1.2;
         }
 
-        .curtains-open .curtain-half.left { transform: translateX(-100%); }
-        .curtains-open .curtain-half.right { transform: translateX(100%); }
-        .curtains-open #script-monogram { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
-        .curtains-open { visibility: hidden; pointer-events: none; }
+        .curtains-open .curtain-half.left {
+            transform: translateX(-100%);
+        }
+
+        .curtains-open .curtain-half.right {
+            transform: translateX(100%);
+        }
+
+        .curtains-open #script-monogram {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.6);
+        }
+
+        .curtains-open {
+            visibility: hidden;
+            pointer-events: none;
+        }
 
         /* --- المحتوى الرئيسي --- */
         #main-content-wrapper {
@@ -122,12 +157,75 @@
             box-sizing: border-box;
         }
 
-        .quran-verse { font-size: 1.2rem; color: var(--rose-gold); margin-bottom: 25px; font-weight: bold; }
-        .parents-section { display: flex; justify-content: space-around; margin: 20px 0; gap: 10px; }
-        .parent-title { display: block; font-weight: bold; color: var(--rose-gold); font-size: 1.1rem; }
-        .name { font-family: 'Amiri', serif; font-size: 3.8rem; color: var(--text-main); display: block; }
-        .and-sign { font-family: 'Great Vibes', cursive; font-size: 2.2rem; color: var(--rose-gold); }
-        .highlight { color: var(--rose-gold); font-weight: bold; font-size: 1.2rem; }
+        .quran-verse {
+            font-size: 1.2rem;
+            color: var(--rose-gold);
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-weight: bold;
+        }
+
+        .parents-section {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            margin: 20px 0;
+            gap: 10px;
+            flex-wrap: nowrap; 
+        }
+
+        .parent-box {
+            flex: 1;
+            font-size: 1rem;
+        }
+
+        .parent-title {
+            display: block;
+            font-weight: bold;
+            color: var(--rose-gold);
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .parent-name {
+            display: block;
+            font-family: 'Amiri', serif;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            white-space: normal; 
+        }
+
+        .names-section {
+            margin: 20px 0;
+        }
+
+        .name {
+            font-family: 'Amiri', serif;
+            font-size: 3.8rem;
+            color: var(--text-main);
+            display: block;
+            margin: 5px 0;
+        }
+
+        .and-sign {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.2rem;
+            color: var(--rose-gold);
+        }
+
+        .details-section {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+            border-top: 1px solid var(--ivory-dark);
+            padding-top: 20px;
+        }
+
+        .highlight {
+            color: var(--rose-gold);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
 
         .location-btn {
             display: inline-block;
@@ -137,9 +235,10 @@
             color: white;
             text-decoration: none;
             border-radius: 50px;
+            transition: 0.4s;
         }
 
-        /* زر الموسيقى */
+        /* --- زر الموسيقى --- */
         #musicBtn {
             position: fixed;
             bottom: 20px;
@@ -153,6 +252,8 @@
             cursor: pointer;
             z-index: 3000;
             display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            font-size: 18px;
         }
 
         @keyframes monogramFloat {
@@ -161,7 +262,13 @@
         }
 
         @media (max-width: 600px) {
+            .parents-section {
+                flex-direction: row;
+                gap: 5px;
+            }
             .name { font-size: 3rem; }
+            .parent-name { font-size: 0.95rem; }
+            .parent-title { font-size: 1rem; }
             #script-monogram-text { font-size: 3.5rem; }
         }
     </style>
@@ -169,17 +276,20 @@
 
 <body>
 
-    <!-- كود الصوت - تأكدي أن الملف في GitHub اسمه music.mp3 -->
+    <!-- كود الصوت - تأكدي أن الملف في GitHub اسمه music.mp3 بالضبط -->
     <audio id="weddingMusic" loop preload="auto">
         <source src="music.mp3" type="audio/mpeg">
     </audio>
 
+    <!-- زر التحكم بالصوت -->
     <button id="musicBtn" onclick="toggleMusic()">🔊</button>
 
     <div id="dreamy-curtain-container" onclick="openDreamyCurtains()">
         <div class="curtain-half left"></div>
         <div id="script-monogram">
-            <div id="script-monogram-text">Y&K <br> <span style="font-family: 'Amiri', serif; font-size: 2.1rem;">عمر واحد واخترته معك</span> <br> <span>23.5.2026</span></div>
+            <div id="script-monogram-text">Y&K <br> <span style="font-family: 'Amiri', serif;
+font-style: italic; font-size: 2.1rem;">عمر واحد واخترته معك</span>
+<br> <span>23.5.2026</span></div>
         </div>
         <div class="curtain-half right"></div>
     </div>
@@ -187,22 +297,48 @@
     <div id="main-content-wrapper">
         <div class="main-container">
             <div class="card-content">
-                <div class="quran-verse">﷽ <br> "وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا..."</div>
-                <div class="parents-section">
-                    <div><span class="parent-title">والد العريس</span><span>علاء يحيى الكسواني</span></div>
-                    <div><span class="parent-title">والد العروس</span><span>أحمد جميل البشتاوي</span></div>
+                <div class="quran-verse">
+                    ﷽ <br>
+                    "وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ
+                    بَيْنَكُم مَّوَدَّةً وَرَحْمَةً"
                 </div>
+
+                <div style="font-size: 1.1rem; font-weight:bold; color: #777; margin-bottom: 10px;">بقلوب ملؤها الحب يتشرف كل من </div>
+
+                <div class="parents-section">
+                    <div class="parent-box">
+                        <span class="parent-title">والد العريس</span>
+                        <span class="parent-name">علاء يحيى الكسواني</span>
+                    </div>
+                    <div class="parent-box">
+                        <span class="parent-title">والد العروس</span>
+                        <span class="parent-name">أحمد جميل البشتاوي</span>
+                    </div>
+                </div>
+
+                <div style="font-size: 1.1rem; font-weight:bold; color: #777; margin-bottom: 10px; margin-top: 15px;">لحضور حفل فلذة كبديهما </div>
+                
                 <div class="names-section">
                     <span class="name">يحيى</span>
                     <span class="and-sign">&</span>
                     <span class="name">خالدية</span>
                 </div>
+
                 <div class="details-section">
-                    يوم <span class="highlight">السبت 23 مايو 2026</span> <br>
-                    قاعات <span class="highlight">قصر تريو - قاعة 2</span> <br>
-                    الساعة <span class="highlight">8:30 مساءً</span>
+                    بمشيئة الله تعالى، ستقام مراسم الفرح <br>
+                    في قاعات <span class="highlight">قصر تريو - القاعة رقم 2</span>
+                    <br>
+                    تُضاء الأنوار ببهجة حضوركم من الساعة <br>
+                    <span class="highlight">8:30 مساءً وحتى 11:30 منتصف الليل</span>
+                    <br>
+                    وذلك يوم <span class="highlight">السبت الموافق 23 مايو 2026</span>
                 </div>
-                <a href="https://maps.app.goo.gl/S9nVurfEHhyEyHqN8?g_st=iw" target="_blank" class="location-btn">📍 موقع القاعة</a>
+
+                <p style="margin-top: 30px; font-style: italic; color: #888;">
+                    "تكتمل سعادتنا ويُزهر فرحنا بجمال تشريفكم"
+                </p>
+
+                <a href="https://maps.app.goo.gl/S9nVurfEHhyEyHqN8?g_st=iw" target="_blank" class="location-btn">📍 موقع قاعة قصر تريو</a>
             </div>
         </div>
     </div>
@@ -211,27 +347,42 @@
         var music = document.getElementById("weddingMusic");
         var btn = document.getElementById("musicBtn");
 
-        // تشغيل الصوت فور لمس أي مكان (لحل مشكلة حظر المتصفحات)
+        function openDreamyCurtains() {
+            const container = document.getElementById('dreamy-curtain-container');
+            container.classList.add('curtains-open');
+            const contentWrapper = document.getElementById('main-content-wrapper');
+            contentWrapper.style.opacity = '1';
+
+            // تشغيل الموسيقى فور فتح الستائر
+            music.play().then(() => {
+                btn.style.display = "block";
+            }).catch(e => {
+                console.log("Autoplay blocked, waiting for more interaction.");
+            });
+
+            setTimeout(() => {
+                document.body.style.overflow = 'auto';
+            }, 2500);
+        }
+
+        // أضفت لكِ هذا السطر لضمان الصوت عند أي لمسة غصباً عن المتصفح
         document.addEventListener('click', function() {
             if (music.paused) {
-                music.play().catch(e => console.log("Audio play failed", e));
+                music.play();
+                btn.style.display = "block";
             }
         }, { once: true });
 
-        function openDreamyCurtains() {
-            document.getElementById('dreamy-curtain-container').classList.add('curtains-open');
-            document.getElementById('main-content-wrapper').style.opacity = '1';
-            
-            music.play().catch(e => console.log("Play error:", e));
-            btn.style.display = "block";
-
-            setTimeout(() => { document.body.style.overflow = 'auto'; }, 2500);
-        }
-
         function toggleMusic() {
-            if (music.paused) { music.play(); btn.innerHTML = "🔊"; } 
-            else { music.pause(); btn.innerHTML = "🔇"; }
+            if (music.paused) {
+                music.play();
+                btn.innerHTML = "🔊";
+            } else {
+                music.pause();
+                btn.innerHTML = "🔇";
+            }
         }
     </script>
 </body>
+
 </html>
